@@ -15,7 +15,6 @@ The Book Management System is a comprehensive web application developed using Sp
 - [Usage](#usage)
 - [API Endpoints](#api-endpoints)
 - [Postman Documentation](#postman-documentation)
-- [Contributing](#contributing)
 
 
 ## Features
@@ -61,6 +60,7 @@ Before getting started, ensure you have the following components installed:
    ```bash
    git clone https://github.com/airnest97/mobilise-task.git
    cd mobilise-task
+   ```
 
 2. **Configure the Database:**
 
@@ -70,13 +70,15 @@ Before getting started, ensure you have the following components installed:
    spring.datasource.url=jdbc:h2:mem:your_database_name
    spring.datasource.username=your_database_username
    spring.datasource.password=your_database_password
+   ```
 
 ## Build and Run the Application:
 
 Execute the following command to build and run the application:
 
-    ```bash
-    mvn spring-boot:run
+````bash
+mvn spring-boot:run
+````
 
 ## Access the Application
 
@@ -123,11 +125,4 @@ The Book Management System offers the following API endpoints:
 For more detailed information about these API endpoints, refer to the API documentation.
 - [Postman Documentation Collection](https://documenter.getpostman.com/view/21596187/2s9Xy5Lpys)
 
-
-## Contributing
-
-Ccontributions are welcomed from the community. If you encounter any issues or have suggestions for improvements, feel free to:
-
-- Open an issue to discuss the problem or enhancement.
-- Fork the repository, make changes, and submit a pull request for review.
 

@@ -9,7 +9,7 @@ import com.mobilise.task.models.Book;
 import com.mobilise.task.repositories.BookRepository;
 import com.mobilise.task.services.interfaces.AuthorService;
 import com.mobilise.task.services.interfaces.BookService;
-import com.mobilise.task.services.storage.IAwsS3Service;
+import com.mobilise.task.services.storage.AwsS3Service;
 import com.mobilise.task.services.storage.IStorageService;
 import com.mobilise.task.services.storage.UploadObject;
 import com.mobilise.task.specifications.BookSpecs;
@@ -45,7 +45,7 @@ public class BookServiceImpl implements BookService {
     public static final String BOOK_EVENT = "BOOK_EVENT";
 
     public BookServiceImpl(BookRepository bookRepository,
-                           AuthorService authorService, @Qualifier(IAwsS3Service.NAME) IStorageService iStorageService,
+                           AuthorService authorService, @Qualifier(AwsS3Service.NAME) IStorageService iStorageService,
                            @Value("${SERVICE_BUCKET_NAME}")String userDocumentBucketName, ObjectMapper objectMapper) {
         this.bookRepository = bookRepository;
         this.authorService = authorService;

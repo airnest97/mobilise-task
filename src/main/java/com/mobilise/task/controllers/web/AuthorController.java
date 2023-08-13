@@ -7,7 +7,6 @@ import com.mobilise.task.services.interfaces.AuthorService;
 import com.mobilise.task.specifications.AuthorSpecs;
 import com.mobilise.task.utils.IAppendableReferenceUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
@@ -68,10 +66,12 @@ public class AuthorController {
     @GetMapping(value = "/all", produces = "application/json")
     @Cacheable(value = AUTHOR_CACHE)
     public ResponseEntity<?> getAllAuthor(
-            @RequestParam(value = "pageNo", required = false) @DefaultValue({"0"}) @NotNull String pageNo,
-            @RequestParam(value = "noOfItems", required = false) @DefaultValue({"10"}) @NotNull String numberOfItems){
+            @RequestParam(value = "pageNo", required = false, defaultValue = "0") String pageNo,
+            @RequestParam(value = "noOfItems", required = false, defaultValue = "0") String numberOfItems){
         Map<String, Object> pageResult = authorService.findAll(Integer.parseInt(pageNo), Integer.parseInt(numberOfItems));
-        return new ResponseEntity<>(pageResult, HttpStatus.OK);
+        PagedResponse pagedResponse = new PagedResponse();
+        pagedResponse.setPagedResponse(pageResult);
+        return new ResponseEntity<>(pagedResponse, HttpStatus.OK);
     }
 
 

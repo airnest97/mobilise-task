@@ -15,9 +15,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-@Service(IAwsS3Service.NAME)
+@Service(AwsS3Service.NAME)
 @RequiredArgsConstructor
-public class IAwsS3Service implements IStorageService {
+public class AwsS3Service implements IStorageService {
 
     public static final String NAME = "IAwsS3Service";
 
