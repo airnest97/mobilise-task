@@ -22,7 +22,7 @@ public class CacheConfig {
     @Bean
     public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
         RedisCacheConfiguration cacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofHours(2)) // expiration time to 2 hours
+                .entryTtl(Duration.ofMinutes(5)) // expiration time to 5 minutes
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(RedisSerializer.json()));
 
         return RedisCacheManager.builder(redisConnectionFactory)
