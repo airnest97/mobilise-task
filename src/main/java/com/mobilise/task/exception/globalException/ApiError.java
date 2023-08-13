@@ -1,4 +1,4 @@
-package com.mobilise.task.controllers.globalException;
+package com.mobilise.task.exception.globalException;
 
 import org.springframework.http.HttpStatus;
 

@@ -10,11 +10,10 @@ import com.mobilise.task.repositories.BookRepository;
 import com.mobilise.task.services.interfaces.AuthorService;
 import com.mobilise.task.services.interfaces.BookService;
 import com.mobilise.task.services.storage.AwsS3Service;
-import com.mobilise.task.services.storage.IStorageService;
+import com.mobilise.task.services.storage.StorageService;
 import com.mobilise.task.services.storage.UploadObject;
 import com.mobilise.task.specifications.BookSpecs;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,28 +33,28 @@ import static com.mobilise.task.utils.Constants.ALREADY_EXIST;
 import static com.mobilise.task.utils.Constants.NOT_FOUND;
 
 @Service
+@Slf4j
 public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
     private final AuthorService authorService;
-    private final IStorageService iStorageService;
+    private final StorageService storageService;
     private final String userDocumentBucketName;
     private final ObjectMapper objectMapper;
-    private static final Logger logger = LoggerFactory.getLogger(BookServiceImpl.class);
     public static final String BOOK_EVENT = "BOOK_EVENT";
 
     public BookServiceImpl(BookRepository bookRepository,
-                           AuthorService authorService, @Qualifier(AwsS3Service.NAME) IStorageService iStorageService,
+                           AuthorService authorService, @Qualifier(AwsS3Service.NAME) StorageService storageService,
                            @Value("${SERVICE_BUCKET_NAME}")String userDocumentBucketName, ObjectMapper objectMapper) {
         this.bookRepository = bookRepository;
         this.authorService = authorService;
-        this.iStorageService = iStorageService;
+        this.storageService = storageService;
         this.userDocumentBucketName = userDocumentBucketName;
         this.objectMapper = objectMapper;
     }
 
     @Override
-    public BookDto createBook(BookRequest bookRequest) throws IOException, GenericException {
+    public BookDto createBook(BookRequest bookRequest) throws IOException {
         Optional<Book> foundBook = bookRepository.findBookByIsbn(bookRequest.getIsbn());
         if(foundBook.isPresent()){
             throw new GenericException(ALREADY_EXIST, HttpStatus.BAD_REQUEST);
@@ -66,6 +65,7 @@ public class BookServiceImpl implements BookService {
         });
         populateAuthors(authorDtos, authors);
         Book book = new Book();
+        this.findBookByIsbn(bookRequest.getIsbn());
         AmazonResponse amazonResponse = null;
         if (bookRequest.getFile() != null) {
             amazonResponse = uploadedBookUrl(bookRequest.getFile(), bookRequest.getFile().getOriginalFilename());
@@ -102,18 +102,18 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public BookDto findById(long id) throws GenericException {
+    public BookDto findById(long id) {
         Book book = bookRepository.findById(id).orElseThrow(() -> new GenericException(NOT_FOUND, HttpStatus.NOT_FOUND));
         return BookDto.toDto(book);
     }
 
     @Override
-    public void updateBook(long id, BookRequest bookRequest) throws GenericException, IOException {
+    public void updateBook(long id, BookRequest bookRequest) throws IOException {
         Book book = this.findBook(id);
         List<Author> authors = new ArrayList<>();
         AmazonResponse amazonResponse = null;
         if (bookRequest.getFile() != null){
-            iStorageService.deleteFile(book.getFileName());
+            storageService.deleteFile(book.getFileName());
             amazonResponse = uploadedBookUrl(bookRequest.getFile(), book.getFileName());
         }
         List<AuthorDto> authorDtos =  objectMapper.readValue(bookRequest.getAuthorList(), new TypeReference<>() {
@@ -127,7 +127,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Map<String, Object> findAll(int pageNumber, int noOfItems) {
+    public PagedResponse findAll(int pageNumber, int noOfItems) {
         Pageable pageable = PageRequest.of(pageNumber, noOfItems, Sort.by("title"));
         Page<Book> page = bookRepository.findAll(pageable);
         Map<String, Object> pageResult = new HashMap<>();
@@ -145,7 +145,10 @@ public class BookServiceImpl implements BookService {
         pageResult.put("NumberOfElementsInPage", page.getNumberOfElements());
         pageResult.put("pageNumber", page.getNumber());
         pageResult.put("size", page.getSize());
-        return pageResult;
+
+        PagedResponse pagedResponse = new PagedResponse();
+        pagedResponse.setPagedResponse(pageResult);
+        return pagedResponse;
 
     }
 
@@ -169,13 +172,16 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public PageDto searchCriteria(BookSpecs bookSpecs) {
+    public PageDto searchCriteria(String query, int page, int size) {
+        BookSpecs bookSpecs = new BookSpecs(query);
+        bookSpecs.setPage(page);
+        bookSpecs.setSize(size);
         Page<Book> bookPage = bookRepository.findAll(bookSpecs, bookSpecs.getPageable());
         return PageDto.build(bookPage, BookDto::toDto);
     }
 
     @Override
-    public void deleteBook(long id) throws GenericException {
+    public void deleteBook(long id) {
         Book book = this.findBook(id);
         bookRepository.delete(book);
     }
@@ -184,13 +190,17 @@ public class BookServiceImpl implements BookService {
         UploadObject uploadObject = new UploadObject();
         uploadObject.setBucketName(userDocumentBucketName);
         uploadObject.setName(fileName);
-        logger.info("Event={}, uploadObject={}", BOOK_EVENT, uploadObject);
-        return iStorageService.uploadToBucket(multipartFile.getInputStream(), uploadObject);
+        log.info("Event={}, uploadObject={}", BOOK_EVENT, uploadObject);
+        return storageService.uploadToBucket(multipartFile.getInputStream(), uploadObject);
     }
 
-    private Book findBook(long id) throws GenericException {
+    private Book findBook(long id) {
         return bookRepository.findById(id).orElseThrow(() -> new GenericException(NOT_FOUND, HttpStatus.NOT_FOUND));
     }
 
-
+    private void findBookByIsbn(int isbn) {
+        if (bookRepository.existsByIsbn(isbn)){
+            throw new GenericException(ALREADY_EXIST, HttpStatus.BAD_REQUEST);
+        }
+    }
 }

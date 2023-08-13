@@ -10,7 +10,8 @@ The Book Management System is a comprehensive web application developed using Sp
 - [Features](#features)
 - [Technologies Used](#technologies-used)
 - [Getting Started](#getting-started)
-    - [Prerequisites](#prerequisites)
+    - [Prerequisites Requirement](#prerequisites-requirement)
+    - [Optional Requirement](#optional-requirement)
     - [Installation](#installation)
 - [Usage](#usage)
 - [API Endpoints](#api-endpoints)
@@ -37,21 +38,37 @@ The Book Management System leverages modern technologies to deliver a robust and
 - **Spring Boot**: A powerful framework for building robust and scalable applications.
 - **Spring Data JPA**: Provides data access and manipulation capabilities using the Java Persistence API.
 - **Spring Web**: Facilitates the creation of web APIs and interfaces.
-- **H2**: A widely-used relational database management system.
+- **H2**: A widely-used in-memory database management system.
 - **Maven**: Manages project dependencies and provides a structured build process.
 - **Git**: Version control for collaborative development.
 - **Docker**: Containerization lets you build, test, and deploy applications quickly.
-- **Redis**: An in-memory database that stores data in the server memory, a popular tool to cache data.
+- **AmazonS3**: A remote storage client where books were being uploaded to and saved.
 
 ## Getting Started
 
-### Prerequisites
+### Prerequisites Requirement
 
 Before getting started, ensure you have the following components installed:
 
-- [Java Development Kit (JDK)](https://www.oracle.com/java/technologies/javase-downloads.html)
-- [Maven](https://maven.apache.org/download.cgi)
+1. **A docker file is on the project root directory, you would need docker installed on your local machine to run the docker file.**
+2. **This project was built using JDK 17, you would need JDK 17 installed on you local machine.**
 
+- [Java Development Kit (JDK 17)](https://www.oracle.com/java/technologies/javase-downloads.html)
+- [Maven](https://maven.apache.org/download.cgi)
+- [Docker](https://www.docker.com/products/docker-desktop/)
+
+
+### Optional Requirement
+
+1. **Docker.**
+- **The first command builds the docker image.**
+- **The second command runs the docker build.**
+ 
+    ```bash
+   docker build -t task:latest . 
+   
+   docker run -d -p 6082:6082 task:latest
+    ```
 
 ### Installation
 
@@ -106,18 +123,18 @@ The Book Management System offers the following API endpoints:
 - List all books: `GET /api/v1/book/all?pageNo=pageNo&noOfItem=noOfItem`
 - Get book by ID: `GET /api/v1/book/{id}`
 - Add new book: `POST /api/v1/book/create`
-- Update book: `PATCH /api/v1/book/update/{id}`
+- Update book: `PUT /api/v1/book/update/{id}`
 - Delete book: `DELETE /api/v1/book/{id}`
-- Search books: `GET /api/v1/books/searchBook?title=title&page=page&size=size`
+- Search books: `GET /api/v1/books/search-book?isbn=isbn&page=page&size=size`
 
 ### Author Endpoints
 
 - List all authors: `GET /api/v1/author/all?pageNo=pageNo&noOfItem=noOfItem`
 - Get author by ID: `GET /api/v1/author/{id}`
 - Add new author: `POST /api/v1/author/create`
-- Update author: `PATCH /api/v1/author/update/{id}`
+- Update author: `PUT /api/v1/author/update/{id}`
 - Delete author: `DELETE /api/v1/author/{id}`
-- Search author: `GET /api/v1/books/searchAuthor?title=title&page=page&size=size`
+- Search author: `GET /api/v1/books/search-author?firstName=firstName&page=page&size=size`
 
 
 ## postman documentation

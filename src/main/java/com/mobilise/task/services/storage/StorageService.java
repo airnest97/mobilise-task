@@ -5,7 +5,7 @@ import com.mobilise.task.dtos.AmazonResponse;
 import java.io.IOException;
 import java.io.InputStream;
 
-public interface IStorageService {
+public interface StorageService {
     String FILE_SEPARATOR = "/";
 
     void createBucket(String name);

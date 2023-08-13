@@ -2,12 +2,11 @@ package com.mobilise.task.annotation.validators;
 
 import com.google.common.io.Files;
 import com.mobilise.task.annotation.ValidateMultipart;
-import com.mobilise.task.controllers.globalException.ErrorResponseWithArgsDto;
+import com.mobilise.task.exception.globalException.ErrorResponseWithArgsDto;
 import com.mobilise.task.exception.CustomBindRuntimeException;
 import lombok.SneakyThrows;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.util.ArrayList;

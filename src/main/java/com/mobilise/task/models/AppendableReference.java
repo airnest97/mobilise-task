@@ -12,7 +12,7 @@ import static com.mobilise.task.utils.Constants.APPENDABLE_SEPARATOR;
 @Getter
 @Setter
 @MappedSuperclass
-public abstract class IAppendableReference {
+public class AppendableReference {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)

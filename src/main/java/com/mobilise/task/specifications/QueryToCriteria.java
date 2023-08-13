@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-public class QueryToCriteria<T> extends IQueryToCriteria<T> {
+public class QueryToCriteria<T> extends QueryToCriteriaImpl<T> {
 
     private String orderBy = "id";
 

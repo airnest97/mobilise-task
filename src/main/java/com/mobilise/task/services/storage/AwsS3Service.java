@@ -17,9 +17,9 @@ import java.io.InputStream;
 
 @Service(AwsS3Service.NAME)
 @RequiredArgsConstructor
-public class AwsS3Service implements IStorageService {
+public class AwsS3Service implements StorageService {
 
-    public static final String NAME = "IAwsS3Service";
+    public static final String NAME = "AwsS3Service";
 
     private final AmazonS3 amazonS3;
     @Value("${SERVICE_BUCKET_NAME}")

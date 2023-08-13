@@ -19,25 +19,25 @@ import java.util.Arrays;
 import java.util.List;
 
 
-public abstract class IQueryToCriteria<T> implements Specification<T> {
+public abstract class QueryToCriteriaImpl<T> implements Specification<T> {
     private final List<Criteria> criteriaList;
     private final String fullTextValue;
     private int page;
     private int size;
 
-    public IQueryToCriteria(String query) {
+    public QueryToCriteriaImpl(String query) {
         criteriaList = CriteriaConverter.queryToCriteria(query);
         fullTextValue = CriteriaConverter.getFullTextValue(query);
     }
 
-    public IQueryToCriteria(String query, Criteria... first) {
+    public QueryToCriteriaImpl(String query, Criteria... first) {
         criteriaList = new ArrayList<>();
         criteriaList.addAll(Arrays.asList(first));
         criteriaList.addAll(CriteriaConverter.queryToCriteria(query));
         fullTextValue = CriteriaConverter.getFullTextValue(query);
     }
 
-    public IQueryToCriteria(String query, String[] ignoreProperties, Criteria... first) {
+    public QueryToCriteriaImpl(String query, String[] ignoreProperties, Criteria... first) {
         criteriaList = new ArrayList<>();
         criteriaList.addAll(Arrays.asList(first));
         criteriaList.addAll(CriteriaConverter.queryToCriteria(query, ignoreProperties));

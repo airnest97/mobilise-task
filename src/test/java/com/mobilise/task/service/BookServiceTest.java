@@ -6,14 +6,13 @@ import com.mobilise.task.dtos.*;
 import com.mobilise.task.enums.AgeRating;
 import com.mobilise.task.enums.Genre;
 import com.mobilise.task.enums.Language;
-import com.mobilise.task.exception.GenericException;
 import com.mobilise.task.models.Author;
 import com.mobilise.task.models.Book;
 import com.mobilise.task.repositories.BookRepository;
 import com.mobilise.task.services.implementations.BookServiceImpl;
 import com.mobilise.task.services.interfaces.AuthorService;
 import com.mobilise.task.services.interfaces.BookService;
-import com.mobilise.task.services.storage.IStorageService;
+import com.mobilise.task.services.storage.StorageService;
 import com.mobilise.task.services.storage.UploadObject;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,7 +43,7 @@ public class BookServiceTest {
     @Mock
     private AuthorService authorService;
     @Mock
-    private  IStorageService iStorageService;
+    private StorageService storageService;
 
     private String bucketName = "bookBucket";
     @Mock
@@ -57,7 +56,7 @@ public class BookServiceTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        bookService  = new BookServiceImpl(bookRepository,authorService,iStorageService,bucketName,objectMapper);
+        bookService  = new BookServiceImpl(bookRepository,authorService,storageService,bucketName,objectMapper);
         bookRequest = new BookRequest();
         bookRequest.setAgeRating(AgeRating.PG13);
         bookRequest.setFile(new MockMultipartFile("test file",new ByteArrayInputStream(new byte[4])));
@@ -97,7 +96,7 @@ public class BookServiceTest {
     }
 
     @Test
-    public void testThatBookCanBeCreated() throws IOException, GenericException {
+    public void testThatBookCanBeCreated() throws IOException {
         when(bookRepository.findBookByIsbn(any(Integer.class))).thenReturn(Optional.empty());
         AuthorDto authorDto = new AuthorDto();
         authorDto.setEmail("ernestehigiator@yahoo.com");
@@ -112,7 +111,7 @@ public class BookServiceTest {
                 .thenReturn(authorDtos);
         when(authorService.findByEmail(any(String.class))).thenReturn(Optional.empty());
         when(authorService.createAuthor(any(AuthorRequest.class))).thenReturn(author);
-        when(iStorageService.uploadToBucket(any(InputStream.class),any(UploadObject.class))).thenReturn(amazonResponse);
+        when(storageService.uploadToBucket(any(InputStream.class),any(UploadObject.class))).thenReturn(amazonResponse);
         when(bookRepository.save(any(Book.class))).thenReturn(book);
         BookDto bookDto = bookService.createBook(bookRequest);
         assertThat(bookDto.getGenre()).isEqualTo(Genre.FICTION);
@@ -120,7 +119,7 @@ public class BookServiceTest {
     }
 
     @Test
-    void findByIdTest() throws GenericException {
+    void findByIdTest() {
         when(bookRepository.findById(any(Long.class))).thenReturn(Optional.of(book));
         BookDto bookDto = bookService.findById(1L);
         assertThat(bookDto).isNotEqualTo(null);
@@ -130,9 +129,9 @@ public class BookServiceTest {
     void findAllTest() {
         Page<Book> bookPage = new PageImpl<>(Collections.singletonList(book));
         when(bookRepository.findAll(any(Pageable.class))).thenReturn(bookPage);
-        Map<String, Object> result = bookService.findAll(0, 1);
-        assertEquals(1, result.get("totalNumberOfPages"));
-        assertEquals(1, result.get("size"));
+        PagedResponse result = bookService.findAll(0, 1);
+        assertEquals(1, result.getPagedResponse().get("totalNumberOfPages"));
+        assertEquals(1, result.getPagedResponse().get("size"));
         verify(bookRepository, times(1)).findAll(any(Pageable.class));
     }
 
