@@ -9,8 +9,7 @@ import com.mobilise.task.services.interfaces.AuthorService;
 import com.mobilise.task.specifications.AuthorSpecs;
 import com.mobilise.task.utils.BeanUtilHelper;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,23 +26,23 @@ import static com.mobilise.task.utils.Constants.NOT_FOUND;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class AuthorServiceImpl implements AuthorService {
     
     private final AuthorRepository authorRepository;
     public static final String AUTHOR_EVENT = "AUTHOR_SERVICE";
-    public static Logger logger = LoggerFactory.getLogger(AuthorServiceImpl.class);
 
 
     @Override
-    public Author createAuthor(AuthorRequest authorRequest) throws GenericException {
+    public Author createAuthor(AuthorRequest authorRequest) {
         authorDoesNotExist(authorRequest.getEmail());
         Author author = new Author();
         BeanUtils.copyProperties(authorRequest, author);
-        logger.info("Event={}, author={}, authorRequest={}", AUTHOR_EVENT, author, authorRequest);
+        log.info("Event={}, author={}, authorRequest={}", AUTHOR_EVENT, author, authorRequest);
         return authorRepository.save(author);
     }
 
-    private void authorDoesNotExist(String email) throws GenericException {
+    private void authorDoesNotExist(String email) {
         Optional<Author> optionalAuthor = authorRepository.findByEmail(email);
         if(optionalAuthor.isPresent()){
             throw new GenericException(ALREADY_EXIST, HttpStatus.BAD_REQUEST);
@@ -59,21 +58,23 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
-    public AuthorResponse findById(long id) throws GenericException {
+    public AuthorResponse findById(long id) {
+        System.out.println(id);
         Author author = authorRepository.findById(id).orElseThrow(() -> new GenericException(NOT_FOUND, HttpStatus.NOT_FOUND));
-        logger.info("Event={}, author={}", AUTHOR_EVENT, author);
+        log.info("Event={}, author={}", AUTHOR_EVENT, author);
+        System.out.println(author.getId());
         return AuthorResponse.fromModel(author);
     }
 
     @Override
-    public void updateAuthor(long id, AuthorRequest updateAuthorRequest) throws InvocationTargetException, IllegalAccessException, GenericException {
+    public void updateAuthor(long id, AuthorRequest updateAuthorRequest) throws InvocationTargetException, IllegalAccessException {
         Author author = this.findAuthor(id);
         BeanUtilHelper.copyPropertiesIgnoreNull(updateAuthorRequest, author);
         authorRepository.save(author);
     }
 
     @Override
-    public Map<String, Object> findAll(int pageNumber, int noOfItems) {
+    public PagedResponse findAll(int pageNumber, int noOfItems) {
         Pageable pageable = PageRequest.of(pageNumber, noOfItems, Sort.by("firstName"));
         Page<Author> page = authorRepository.findAll(pageable);
         Map<String, Object> pageResult = new HashMap<>();
@@ -93,7 +94,10 @@ public class AuthorServiceImpl implements AuthorService {
         pageResult.put("NumberOfElementsInPage", page.getNumberOfElements());
         pageResult.put("pageNumber", page.getNumber());
         pageResult.put("size", page.getSize());
-        return pageResult;
+
+        PagedResponse pagedResponse = new PagedResponse();
+        pagedResponse.setPagedResponse(pageResult);
+        return pagedResponse;
     }
 
     private static List<AuthorResponse> mapAuthorToAuthorResponse(List<Author> authors) {
@@ -117,13 +121,16 @@ public class AuthorServiceImpl implements AuthorService {
 
 
     @Override
-    public PageDto searchCriteria(AuthorSpecs authorSpecs) {
+    public PageDto searchCriteria(String query, int page, int size) {
+        AuthorSpecs authorSpecs = new AuthorSpecs(query);
+        authorSpecs.setPage(page);
+        authorSpecs.setSize(size);
         Page<Author> authorPage = authorRepository.findAll(authorSpecs, authorSpecs.getPageable());
         return PageDto.build(authorPage, AuthorDto::toDto);
     }
 
     @Override
-    public void deleteAuthor(long id) throws GenericException {
+    public void deleteAuthor(long id) {
         Author author = this.findAuthor(id);
 
         if (author != null) {
@@ -137,7 +144,7 @@ public class AuthorServiceImpl implements AuthorService {
         }
     }
 
-    private Author findAuthor(long id) throws GenericException {
+    private Author findAuthor(long id) {
         return authorRepository.findById(id).orElseThrow(() -> new GenericException(NOT_FOUND, HttpStatus.NOT_FOUND));
     }
 }

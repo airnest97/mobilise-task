@@ -1,7 +1,8 @@
 package com.mobilise.task.integration;
 
-import com.mobilise.task.controllers.web.BookController;
+import com.mobilise.task.controllers.BookController;
 import com.mobilise.task.dtos.BookDto;
+import com.mobilise.task.dtos.PagedResponse;
 import com.mobilise.task.enums.AgeRating;
 import com.mobilise.task.enums.Genre;
 import com.mobilise.task.enums.Language;
@@ -16,7 +17,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDate;
-import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -80,7 +80,7 @@ public class BookControllerTest {
 
     @Test
     public void getAllBooksTest() throws Exception {
-        when(bookService.findAll(any(Integer.class), any(Integer.class))).thenReturn(Map.of());
+        when(bookService.findAll(any(Integer.class), any(Integer.class))).thenReturn(new PagedResponse());
 
         // Perform the request and assert the response
         mockMvc.perform(get("/api/v1/book/all")

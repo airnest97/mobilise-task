@@ -1,4 +1,4 @@
-package com.mobilise.task.controllers.globalException;
+package com.mobilise.task.exception.globalException;
 
 import com.google.common.collect.Sets;
 import lombok.AllArgsConstructor;

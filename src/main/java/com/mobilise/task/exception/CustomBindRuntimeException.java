@@ -1,6 +1,6 @@
 package com.mobilise.task.exception;
 
-import com.mobilise.task.controllers.globalException.ErrorResponseWithArgsDto;
+import com.mobilise.task.exception.globalException.ErrorResponseWithArgsDto;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -2,9 +2,10 @@ package com.mobilise.task.integration;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mobilise.task.controllers.web.AuthorController;
+import com.mobilise.task.controllers.AuthorController;
 import com.mobilise.task.dtos.AuthorRequest;
 import com.mobilise.task.dtos.AuthorResponse;
+import com.mobilise.task.dtos.PagedResponse;
 import com.mobilise.task.models.Author;
 import com.mobilise.task.services.interfaces.AuthorService;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +17,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -83,7 +83,7 @@ class AuthorControllerTest {
 
     @Test
     public void getAllAuthorTest() throws Exception {
-        when(authorService.findAll(any(Integer.class), any(Integer.class))).thenReturn(Map.of());
+        when(authorService.findAll(any(Integer.class), any(Integer.class))).thenReturn(new PagedResponse());
 
         mockMvc.perform(get("/api/v1/author/all")
                         .param("pageNo", "0")

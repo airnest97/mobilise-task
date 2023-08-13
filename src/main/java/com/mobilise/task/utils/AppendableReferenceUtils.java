@@ -3,7 +3,7 @@ package com.mobilise.task.utils;
 
 import static com.mobilise.task.utils.Constants.APPENDABLE_SEPARATOR;
 
-public class IAppendableReferenceUtils {
+public class AppendableReferenceUtils {
 
     private static String[] getParts(String reference) {
         if (reference == null || !reference.contains(APPENDABLE_SEPARATOR)) {

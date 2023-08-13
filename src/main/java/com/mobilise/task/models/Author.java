@@ -1,7 +1,6 @@
 package com.mobilise.task.models;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -18,7 +17,9 @@ import java.util.List;
 @Setter
 @Getter
 @Table(name = "Author")
-public class Author extends IAppendableReference{
+@AllArgsConstructor
+@NoArgsConstructor
+public class Author extends AppendableReference {
     @Column(nullable = false, length = 10)
     private String firstName;
     @Column(length = 10)

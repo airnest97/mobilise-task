@@ -4,8 +4,7 @@ package com.mobilise.task.models;
 import com.mobilise.task.enums.AgeRating;
 import com.mobilise.task.enums.Genre;
 import com.mobilise.task.enums.Language;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -20,7 +19,10 @@ import java.util.List;
 @Setter
 @Getter
 @Table(name = "Book")
-public class Book extends IAppendableReference{
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Book extends AppendableReference {
     @Column(nullable = false, length = 30)
     private String title;
 

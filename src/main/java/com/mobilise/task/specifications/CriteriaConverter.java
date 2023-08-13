@@ -8,7 +8,7 @@ package com.mobilise.task.specifications;
 
 import com.mobilise.task.utils.DateTimeUtils;
 import com.mobilise.task.utils.EnumUtils;
-import com.mobilise.task.utils.IAppendableReferenceUtils;
+import com.mobilise.task.utils.AppendableReferenceUtils;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.criteria.*;
@@ -27,8 +27,8 @@ public class CriteriaConverter {
     private final static Pattern FULLTEXT_PATTERN = Pattern.compile(FULLTEXT + ":(.*?),");
     private final static Pattern QUERY_PATTERN = Pattern.compile("(.*?)(:<|:>|:|<|>|~|-)(.*?)([,|])");
 
-    public static List<IQueryToCriteria.Criteria> queryToCriteria(String query, String... ignoreParameters) {
-        List<IQueryToCriteria.Criteria> criteriaList = new ArrayList<>();
+    public static List<QueryToCriteriaImpl.Criteria> queryToCriteria(String query, String... ignoreParameters) {
+        List<QueryToCriteriaImpl.Criteria> criteriaList = new ArrayList<>();
 
         if (!StringUtils.hasText(query)) {
             return criteriaList;
@@ -48,13 +48,13 @@ public class CriteriaConverter {
                 if(Arrays.asList(ignoreParameters).contains(key)) continue;
 
                 if (key.equals(ID)) {
-                    long id = IAppendableReferenceUtils.getIdFrom(value);
-                    String reference = IAppendableReferenceUtils.getReferenceFrom(value);
+                    long id = AppendableReferenceUtils.getIdFrom(value);
+                    String reference = AppendableReferenceUtils.getReferenceFrom(value);
                     criteriaList.add(new Criteria(key, condition, id, Operator.AND));
                     criteriaList.add(new Criteria(REFERENCE, condition, reference, operator));
                     continue;
                 } else if (key.toLowerCase().endsWith(ID)) {
-                    long id = IAppendableReferenceUtils.getIdFrom(value);
+                    long id = AppendableReferenceUtils.getIdFrom(value);
                     criteriaList.add(new Criteria(key, condition, id, operator));
                     continue;
                 } else if (key.equalsIgnoreCase(FULLTEXT)) continue;
@@ -206,7 +206,7 @@ public class CriteriaConverter {
     }
 
     private static Predicate prepareJoinPredicate(CriteriaBuilder criteriaBuilder, Root<?> root,
-                                                  IQueryToCriteria.Criteria criteria) {
+                                                  QueryToCriteriaImpl.Criteria criteria) {
         String key = criteria.getKey();
         String[] keys = key.split("\\.");
         int length = keys.length;
