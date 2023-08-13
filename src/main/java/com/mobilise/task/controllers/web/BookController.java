@@ -4,17 +4,16 @@ import com.mobilise.task.annotation.ValidateMultipart;
 import com.mobilise.task.dtos.BookDto;
 import com.mobilise.task.dtos.BookRequest;
 import com.mobilise.task.dtos.PageDto;
+import com.mobilise.task.dtos.PagedResponse;
 import com.mobilise.task.exception.GenericException;
 import com.mobilise.task.services.interfaces.BookService;
 import com.mobilise.task.specifications.BookSpecs;
 import com.mobilise.task.utils.IAppendableReferenceUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.Map;
 
@@ -72,10 +71,12 @@ public class BookController {
     @GetMapping(value = "/all", produces = "application/json")
     @Cacheable(value = BOOK_CACHE)
     public ResponseEntity<?> getAllBooks(
-            @RequestParam(value = "pageNo", required = false) @DefaultValue({"0"}) @NotNull String pageNo,
-            @RequestParam(value = "noOfItems", required = false) @DefaultValue({"10"}) @NotNull String numberOfItems){
+            @RequestParam(value = "pageNo", required = false, defaultValue = "0") String pageNo,
+            @RequestParam(value = "noOfItems", required = false, defaultValue = "0") String numberOfItems){
         Map<String, Object> pageResult = bookService.findAll(Integer.parseInt(pageNo), Integer.parseInt(numberOfItems));
-        return new ResponseEntity<>(pageResult, HttpStatus.OK);
+        PagedResponse pagedResponse = new PagedResponse();
+        pagedResponse.setPagedResponse(pageResult);
+        return new ResponseEntity<>(pagedResponse, HttpStatus.OK);
     }
 
 
