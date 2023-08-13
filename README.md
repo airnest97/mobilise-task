@@ -105,8 +105,8 @@ The Book Management System offers the following API endpoints:
 
 - List all books: `GET /api/v1/book/all?pageNo=pageNo&noOfItem=noOfItem`
 - Get book by ID: `GET /api/v1/book/{id}`
-- Add new book: `POST /api/v1/book`
-- Update book: `PATCH /api/v1/book/{id}`
+- Add new book: `POST /api/v1/book/create`
+- Update book: `PATCH /api/v1/book/update/{id}`
 - Delete book: `DELETE /api/v1/book/{id}`
 - Search books: `GET /api/v1/books/searchBook?title=title&page=page&size=size`
 
@@ -114,8 +114,8 @@ The Book Management System offers the following API endpoints:
 
 - List all authors: `GET /api/v1/author/all?pageNo=pageNo&noOfItem=noOfItem`
 - Get author by ID: `GET /api/v1/author/{id}`
-- Add new author: `POST /api/v1/author`
-- Update author: `PATCH /api/v1/author/{id}`
+- Add new author: `POST /api/v1/author/create`
+- Update author: `PATCH /api/v1/author/update/{id}`
 - Delete author: `DELETE /api/v1/author/{id}`
 - Search author: `GET /api/v1/books/searchAuthor?title=title&page=page&size=size`
 
